@@ -1,0 +1,10 @@
+Station id's from:
+https://api.eveonline.com/eve/ConquerableStationList.xml.aspx
+http://biotronics.basicaware.de/eve/download/StationID2Name.txt
+
+TODO:
+- write sanityCheck, check all stuffs, make errors
+- ignore value for nullsec-only contracts
+- unhardcode expiration/completion figures.
+- make copyable values one-click-to-copy
+- cleanup name-space, remove form_ prefixes from shit.

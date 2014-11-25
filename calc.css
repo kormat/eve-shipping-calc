@@ -1,0 +1,81 @@
+body {
+  background-color: #bbb;
+  width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: helvetica, arial, sans;
+  font-size: 12px;
+}
+
+.left, .right, .footer {
+  box-sizing: border-box;
+  padding:15px 20px;
+  float: left;
+  background:#eee;
+  min-height: 300px;
+  box-shadow: 10px 10px 10px #888;
+  border-radius:25px;
+  margin-bottom:50px;
+}
+.left {
+  width: 500px;
+  margin-right: 50px;
+}
+.right {
+  width: 350px;
+}
+.footer {
+  clear:both;
+  width: 500px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight:700;
+}
+
+a {
+  font-size:80%;
+  color:#000;
+}
+
+span.ingame {
+  font-size:80%;
+  color: #000;
+  text-decoration: none;
+  border-bottom: dotted 2px;
+  cursor: pointer;
+}
+
+select {
+  width: 10em;
+}
+
+button {
+  font-size:80%;
+}
+
+.note {
+  font-size:80%;
+  font-style:italic;
+}
+
+h3.inline {
+  display:inline;
+}
+
+label {
+  font-weight:700;
+  width: 10em;
+  float: left;
+  text-align: right;
+  margin-right: 0.5em;
+  display: block;
+}
+
+div.clear {
+  clear:both;
+}
+
+div.space {
+  margin-bottom: 20px;
+}

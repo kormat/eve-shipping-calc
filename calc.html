@@ -1,0 +1,161 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" ng-app>
+  <head>
+    <title>Eve Shipping Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.27/angular.min.js"></script>
+    <script src="calc.js"></script>
+    <link rel="stylesheet" type="text/css" href="calc.css">
+  </head>
+
+  <body>
+    <form novalidate ng-App="kneesCalc" ng-controller="CalcController" name=calcForm>
+    <h2>Knees Calculator V5 <a href="http://osm.al/knees-calc">http://osm.al/knees-calc</a></h2>
+    <h3>Docs: <a href="http://osm.al/sound-logistics">http://osm.al/sound-logistics</a></h3>
+    <p><a href="v4.html">Older version</a></p>
+
+    <div class="left">
+      <!-- DEBUG: Status: {{status}} -->
+      <div class="space">
+        <h3 class="inline">Route:</h3>
+        (<a href={{permaLink}}>permalink</a>)
+      </div>
+      <div class="clear">
+        <label for "form_route">Route</label>
+        <select ng-model="form_route" ng-change="calcUpdate('route')">
+          <option value="catch">Catch Mk.2</option>
+        </select>
+      </div>
+      <div class="clear">
+        <label for "form_pickup">Pickup</label>
+        <select
+          ng-model="form_pickup"
+          ng-options="c.name for c in pickupStations"
+          ng-change="calcUpdate('pickup')"></select>
+        <span ng-show="form_pickup">
+          (<a href={{form_pickup.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(form_pickup.id)">info</span></span>)
+        </span>
+      </div>
+      <div class="clear">
+        <label for "form_dest">Destination</label>
+        <select
+          ng-model="form_dest"
+          ng-options="c.name for c in destStations"
+          ng-change="calcUpdate('dest')"></select>
+        <span ng-show="form_dest">
+          (<a href={{form_dest.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(form_dest.id)">info</span></span>)
+        </span>
+      </div>
+      <div class="clear">
+        <label for "form_vol">Volume (k m<sup>3</sup>)</label>
+        <input name=vol_input type=number ng-model="form_vol" ng-change="calcUpdate('vol')">
+        <font ng-show="form_vol <= maxVolume">(max {{maxVolume}}k m<sup>3</sup>)</font>
+        <font color="red" ng-show="form_vol > maxVolume">(max {{maxVolume}}k m<sup>3</sup>)</font>
+        <font color="red" ng-show="calcForm.vol_input.$error.number">Not a valid number!</font>
+      </div>
+      <div class="clear">
+        <label for "form_val">Value (Mil ISK)</label>
+        <input name=val_input type=number ng-model="form_val" ng-change="calcUpdate('val')">
+        <font ng-show="form_val <= maxValue">(max {{maxValue}}Mil ISK)</font>
+        <font color="red" ng-show="form_val > maxValue">(max {{maxValue}}Mil ISK)</font>
+        <font color="red" ng-show="calcForm.val_input.$error.number">Not a valid number!</font>
+      </div>
+      <div class="clear">
+        <label for "form_container">Includes assembled containers/ships?</label>
+        <input type="checkbox" ng-model="form_container" ng-change="calcUpdate('cntr')">
+      </div>
+      <div class="clear">
+        <label for "creditDiscount">Credit (Mil ISK)</label>
+        <input name=credit_input type=number ng-model="creditDiscount" ng-change="calcUpdate('credit')">
+        <font ng-show="creditDiscount <= 20">(20M ISK per month)</font>
+        <font color="red" ng-show="creditDiscount > 20">(20M ISK per month)</font>
+        <font color="red" ng-show="calcForm.credit_input.$error.number">Not a valid number!</font>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="space">
+        <h3 class="inline">Calculations:</h3>
+      </div>
+      <div class="clear">
+        <label>Route type</label>
+        <span ng-show="form_pickup">{{form_pickup.sec}}</span>
+        <span ng-show="form_pickup || form_dest"> -> </span>
+        <span ng-show="form_dest">{{form_dest.sec}}</span>
+      </div>
+      <div class="clear">
+        <label>High-sec cost</label>
+        <span ng-show="highsecCost">{{highsecCost.toFixed(2)}}M</span>
+        <span class="note" ng-show="highsecCost > 0"> ({{highsecRate}})</span>
+      </div>
+      <div class="clear">
+        <label>Null-sec cost</label>
+        <span ng-show="nullsecCost">{{nullsecCost.toFixed(2)}}M</span>
+        <span class="note" ng-show="nullsecCost > 0"> ({{nullsecRate}})</span>
+      </div>
+      <div class="clear">
+        <label>Containers surcharge</label>
+        <span ng-show="containerCost > 0">{{containerCost.toFixed(2)}}M</span>
+      </div>
+      <div class="clear">
+        <label>Credit discount</label>
+        <span ng-show="creditDiscount > 0">{{creditDiscount}}M</span>
+      </div>
+      <div class="clear">
+        <label>Total cost</label>
+        <span ng-show="totalCost !== ''">
+          <font ng-show="totalCost >= 0">{{totalCost.toFixed(2)}}M</font>
+          <font color=red ng-show="totalCost < 0">{{totalCost.toFixed(2)}}M</font>
+        </span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="space">
+        <h3 class="inline">Contract details:</h3>
+        <span ng-show="inEve && form_pickup">
+          (<span class="ingame" ng-click="createContract()">createContract</span>)
+        </span>
+      </div>
+      <div class="clear">
+        <label>Contract type</label>
+        Courier
+      </div>
+      <div class="clear">
+        <label>Availability</label>
+        <input readonly size=30 value="Never Bend The Deadline">
+        <span ng-show="inEve">
+          (<span class="ingame" ng-show="inEve" ng-click="showCorp()">info</span>)
+        </span>
+      </div>
+      <div class="clear">
+        <label>Pickup station</label>
+        {{form_pickup.full}}
+      </div>
+      <div class="clear">
+        <label>Ship To</label>
+        <input readonly size=30 value="{{form_dest.full}}">
+      </div>
+      <div class="clear">
+        <label>Reward</label>
+        <input readonly size=30 value="{{totalCost * 1000000}}">
+      </div>
+      <div class="clear">
+        <label>Collateral</label>
+        0
+      </div>
+      <div class="clear">
+        <label>Expiration</label>
+        1 Week
+      </div>
+      <div class="clear">
+        <label>Days to complete</label>
+        <input readonly value=7>
+      </div>
+      <div class="clear">
+        <label>Description</label>
+        <input readonly size=30 value="{{desc}}">
+      </div>
+    </div>
+    </form>
+  </body>
+</html>
