@@ -31,7 +31,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.permaLink = undefined;
   $scope.desc = "";
   $scope.inEve = typeof CCPEVE === "object";
-  $scope.destStations = null;
   $scope.maxVolume = 320;
   $scope.maxValue = 1000;
 
@@ -52,14 +51,39 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     CCPEVE.createContract(3, $scope.form_pickup.id);
   };
 
-  $scope.$watch('formRoute', function() {
-    $scope.pickupStations = $scope.filterStations($scope.formRoute, $scope.stations);
+  $scope.$watch('formRoute.name', function(newVal, oldVal) {
+    console.log("formRoute changed from "+oldVal+" to "+newVal);
+    $scope.routeStations = $scope.filterStations($scope.formRoute, $scope.stations, null);
+    $scope.updateStations();
+  });
+
+  $scope.$watch('formPickup.id', function(newVal, oldVal) {
+    console.log("formPickup.id changed from "+oldVal+" to "+newVal);
+    $scope.updateStations();
 
     // If the current pickup value is already a valid station, then don't change it.
-    if (!$scope.findStation($scope.formPickup.id, $scope.pickupStations)) {
-      $scope.formPickup = $scope.pickupStations[0];
+    if (!$scope.findStation($scope.formDest.id, $scope.destStations)) {
+      $scope.formDest = $scope.destStations[0];
+    };
+    // If there's only one station to choose (not counting the "unset"
+    // placeholder), just set destination directly to that
+    if ($scope.destStations.length === 2) {
+      $scope.formDest = $scope.destStations[1];
     };
   });
+
+  $scope.updateStations = function() {
+    if (!$scope.findStation($scope.formPickup.id, $scope.routeStations)) {
+      // Only change the current pickup station if it isn't valid for the current route
+      $scope.formPickup = $scope.routeStations[0];
+    };
+    // Recalculate the valid destination stations
+    $scope.destStations = $scope.filterStations($scope.formRoute, $scope.stations, $scope.formPickup);
+    if (!$scope.findStation($scope.formDest.id, $scope.destStations)) {
+      // Only change the current pickup station if it isn't valid for the current route
+      $scope.formDest = $scope.destStations[0];
+    };
+  };
 
   $scope.routeType = function(pickup, dest) {
     if(pickup == "" || dest == "")
@@ -191,19 +215,21 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     ];
   */
 
-  $scope.filterStations = function(route, stations) {
+  $scope.filterStations = function(route, stations, skip) {
     if (route.name === "unset") {
-      return [$scope.findStation("none", stations)];
+      return [$scope.noneStation];
     }
     var stns = [];
 
     for(var i in stations) {
       var stn = stations[i];
-      if(stn.id === "none") {
+      if (skip !== null && skip !== $scope.unsetStation && stn.id === skip.id) {
+        continue;
+      } else if (stn.id === "none") {
         continue;
       } else if(stn.id === "unset") {
         stns.push(stn);
-        continue
+        continue;
       } else if(!stn.routes.hasOwnProperty(route.name)) {
         continue;
       } else {
@@ -230,6 +256,10 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.form_dest = destStations[0];
       */
   }
-  $scope.pickupStations = $scope.findStation("none", $scope.stations);
-  $scope.formPickup = $scope.findStation("none", $scope.stations);
+  $scope.noneStation = $scope.findStation("none", $scope.stations)
+  $scope.unsetStation = $scope.findStation("unset", $scope.stations)
+  $scope.routeStations = [$scope.noneStation];
+  $scope.destStations = [$scope.noneStation];
+  $scope.formPickup = $scope.routeStations[0];
+  $scope.formDest = $scope.routeStations[0];
 }]);

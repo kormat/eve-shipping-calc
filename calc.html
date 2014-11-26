@@ -25,7 +25,7 @@
       </div>
       <div class="clear">
         <label for "formPickup">Pickup</label>
-        <select ng-model="formPickup" ng-options="s.name for s in pickupStations">
+        <select ng-model="formPickup" ng-options="s.name for s in routeStations">
         </select>
         <span ng-show="formPickup.url">
           (<a href={{formPickup.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formPickup.id)">info</span></span>)
@@ -33,10 +33,10 @@
       </div>
       <div class="clear">
         <label for "formDest">Destination</label>
-        <select ng-model="formDest" ng-options="c.name for c in destStations">
+        <select ng-model="formDest" ng-options="s.name for s in destStations">
         </select>
-        <span ng-show="form_dest">
-          (<a href={{form_dest.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(form_dest.id)">info</span></span>)
+        <span ng-show="formDest">
+          (<a href={{formDest.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formDest.id)">info</span></span>)
         </span>
       </div>
       <div class="clear">
