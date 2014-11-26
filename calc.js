@@ -1,6 +1,4 @@
-var myApp = angular.module('kneesCalc',[]);
-
-var routes = ["catch"];
+var eveShippingCalc = angular.module('eveShippingCalc',[]);
 
 var params = ["route", "pickup", "dest", "vol", "val", "cntr", "credit"];
 var param_map = {
@@ -14,13 +12,15 @@ var param_map = {
 };
 var tradeHubs = ["Amarr"];
 
-function CalcController($scope, $location) {
+eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', function($scope, $window, $location) {
+  $scope.location = $location
+  $scope.cfg = $window.ESCconfig;
+  $scope.routes = $scope.cfg.routes;
+  $scope.stations = $scope.cfg.stations;
+  $scope.formRoute = $scope.routes[0];
+
   $scope.status = "Initial";
   $scope.totalCost = undefined;
-  if(routes.length == 1)
-    $scope.form_route = routes[0];
-  else
-    $scope.form_route = "";
   $scope.form_pickup = "";
   $scope.form_dest = "";
   $scope.form_vol = 50;
@@ -31,7 +31,6 @@ function CalcController($scope, $location) {
   $scope.permaLink = undefined;
   $scope.desc = "";
   $scope.inEve = typeof CCPEVE === "object";
-  $scope.pickupStations = null;
   $scope.destStations = null;
   $scope.maxVolume = 320;
   $scope.maxValue = 1000;
@@ -52,6 +51,15 @@ function CalcController($scope, $location) {
   $scope.createContract = function() {
     CCPEVE.createContract(3, $scope.form_pickup.id);
   };
+
+  $scope.$watch('formRoute', function() {
+    $scope.pickupStations = $scope.filterStations($scope.formRoute, $scope.stations);
+
+    // If the current pickup value is already a valid station, then don't change it.
+    if (!$scope.findStation($scope.formPickup.id, $scope.pickupStations)) {
+      $scope.formPickup = $scope.pickupStations[0];
+    };
+  });
 
   $scope.routeType = function(pickup, dest) {
     if(pickup == "" || dest == "")
@@ -195,13 +203,13 @@ function CalcController($scope, $location) {
     $scope.status = "updateParams("+param+")";
     switch(param) {
       case "route":
-        $scope.updateRoute(urlValue);
-        $scope.filterStations();
+        //$scope.updateRoute(urlValue);
+        //$scope.filterStations();
         break;
       case "pickup":
       case "dest":
         $scope.updateStation("form_"+param, urlValue);
-        $scope.filterStations();
+        //$scope.filterStations();
         break;
       case "vol":
       case "val":
@@ -257,31 +265,6 @@ function CalcController($scope, $location) {
     return (routes.indexOf(value) > -1)
   };
 
-  $scope.filterStations = function() {
-    var pickupStations = [];
-    var destStations = [];
-    var pickup = $scope.form_pickup;
-    var route = $scope.route;
-    for(var i in $scope.stations) {
-      stn = $scope.stations[i];
-      if($scope.form_route != stn.route)
-        continue;
-      if(!stn.destOnly)
-        pickupStations.push(stn);
-      if(!stn.pickupOnly && stn != $scope.form_pickup) {
-        if(angular.isUndefined(pickup.validDests) ||
-            (pickup.validDests.indexOf(stn.name) > -1))
-          destStations.push(stn);
-        };
-    };
-    $scope.pickupStations = pickupStations;
-    $scope.destStations = destStations;
-    if(pickupStations.length  == 1)
-      $scope.form_pickup = pickupStations[0];
-    if(destStations.length == 1)
-      $scope.form_dest = destStations[0];
-  };
-
   $scope.updateStation = function(type, urlValue) {
     if(angular.isUndefined(urlValue)) {
       //Update from form
@@ -307,18 +290,17 @@ function CalcController($scope, $location) {
       return false;
   };
 
-  $scope.findStation = function(check) {
-    var name = check;
-    if(typeof check == "object")
-      name=check.name;
-    for(var i in $scope.stations) {
-      var stn = $scope.stations[i];
-      if(name.toUpperCase() == stn.name.toUpperCase())
+  $scope.findStation = function(id, stations) {
+    console.log("findStation: id:"+id);
+    for(var i in stations) {
+      var stn = stations[i];
+      if(stn.id === id)
         return stn;
     };
+    return null;
   };
 
-
+/*
   $scope.stations = [
     {
       id: 60008494,
@@ -345,5 +327,47 @@ function CalcController($scope, $location) {
       sec: "null",
     },
     ];
-  $scope.filterStations();
-}
+  */
+
+  $scope.filterStations = function(route, stations) {
+    if (route.name === "unset") {
+      return [$scope.findStation("none", stations)];
+    }
+    var stns = [];
+
+    for(var i in stations) {
+      var stn = stations[i];
+      if(stn.id === "none") {
+        continue;
+      } else if(stn.id === "unset") {
+        stns.push(stn);
+        continue
+      } else if(!stn.routes.hasOwnProperty(route.name)) {
+        continue;
+      } else {
+        stns.push(stn);
+        continue;
+      }
+      /*
+      if(!stn.destOnly)
+        pickupStations.push(stn);
+      if(!stn.pickupOnly && stn != $scope.form_pickup) {
+        if(angular.isUndefined(pickup.validDests) ||
+            (pickup.validDests.indexOf(stn.name) > -1))
+          destStations.push(stn);
+        };
+      */
+    };
+    return stns
+    /*
+    $scope.pickupStations = pickupStations;
+    $scope.destStations = destStations;
+    if(pickupStations.length  == 1)
+      $scope.form_pickup = pickupStations[0];
+    if(destStations.length == 1)
+      $scope.form_dest = destStations[0];
+      */
+  }
+  $scope.pickupStations = $scope.findStation("none", $scope.stations);
+  $scope.formPickup = $scope.findStation("none", $scope.stations);
+}]);

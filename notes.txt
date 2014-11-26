@@ -8,3 +8,7 @@ TODO:
 - unhardcode expiration/completion figures.
 - make copyable values one-click-to-copy
 - cleanup name-space, remove form_ prefixes from shit.
+
+For debugging in chrome's console:
+var scope = angular.element($("html")).scope()
+scope.$apply();

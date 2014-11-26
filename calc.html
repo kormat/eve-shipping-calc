@@ -1,44 +1,42 @@
 <!doctype html>
-<html xmlns:ng="http://angularjs.org" ng-app>
+<html xmlns:ng="http://angularjs.org" ng-app="eveShippingCalc" ng-controller="CalcCtrl">
   <head>
-    <title>Eve Shipping Calculator</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.27/angular.min.js"></script>
     <script src="calc.js"></script>
+    <script src="calc-config.js"></script>
     <link rel="stylesheet" type="text/css" href="calc.css">
+    <title>{{cfg.meta.title || 'ESC'}}</title>
   </head>
 
   <body>
-    <form novalidate ng-App="kneesCalc" ng-controller="CalcController" name=calcForm>
-    <h2>Knees Calculator V5 <a href="http://osm.al/knees-calc">http://osm.al/knees-calc</a></h2>
-    <h3>Docs: <a href="http://osm.al/sound-logistics">http://osm.al/sound-logistics</a></h3>
-    <p><a href="v4.html">Older version</a></p>
+    <h2>{{cfg.meta.header || "Eve Shipping Calculator"}} <a ng-if="cfg.meta.shorturl" ng-href="{{cfg.meta.shorturl}}">{{cfg.meta.shorturl}}</a></h2>
+    <h3 ng-if="cfg.meta.docs">Docs: <a href="{{cfg.meta.docs}}">{{cfg.meta.docs}}</a></h3>
 
+    <form novalidate name=calcForm>
     <div class="left">
       <!-- DEBUG: Status: {{status}} -->
+      <div>DEBUG: pickup: {{formPickup}}</div>
+      <div>DEBUG: pickupStations: {{pickupStations}}</div>
       <div class="space">
         <h3 class="inline">Route:</h3>
-        (<a href={{permaLink}}>permalink</a>)
       </div>
       <div class="clear">
-        <label for "form_route">Route</label>
-        <select ng-model="form_route" ng-change="calcUpdate('route')">
-          <option value="catch">Catch Mk.2</option>
+        <label for "formRoute">Route</label>
+        <select ng-model="formRoute" ng-options="route.text for route in routes">
         </select>
       </div>
       <div class="clear">
-        <label for "form_pickup">Pickup</label>
-        <select
-          ng-model="form_pickup"
-          ng-options="c.name for c in pickupStations"
-          ng-change="calcUpdate('pickup')"></select>
-        <span ng-show="form_pickup">
-          (<a href={{form_pickup.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(form_pickup.id)">info</span></span>)
+        <label for "formPickup">Pickup</label>
+        <select ng-model="formPickup" ng-options="s.name for s in pickupStations">
+        </select>
+        <span ng-show="formPickup.url">
+          (<a href={{formPickup.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formPickup.id)">info</span></span>)
         </span>
       </div>
       <div class="clear">
-        <label for "form_dest">Destination</label>
+        <label for "formDest">Destination</label>
         <select
-          ng-model="form_dest"
+          ng-model="formDest"
           ng-options="c.name for c in destStations"
           ng-change="calcUpdate('dest')"></select>
         <span ng-show="form_dest">
