@@ -70,16 +70,20 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
   });
 
-  $scope.$watch('[formVol, formVal, formCredit]', function(newVal, oldVal) {
+  $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]', function(newVal, oldVal) {
+    //console.log("Inputs changed validity:" + JSON.stringify(newVal))
     $scope.errors = [];
-    if (! $scope.calcForm.vol_input.$valid) {
-      $scope.errors.push("Invalid Volume input");
-    };
-    if (! $scope.calcForm.val_input.$valid) {
-      $scope.errors.push("Invalid Value input");
-    };
-    if (! $scope.calcForm.credit_input.$valid) {
-      $scope.errors.push("Invalid Credit input");
+    var inputNames = ["Volume", "Value", "Credit"]
+    for (var i = 0; i< newVal.length; i++) {
+      var inputError = newVal[i];
+      var inputName = inputNames[i];
+      if (inputError['number']) {
+        $scope.errors.push(inputName+": not a valid number");
+      } else if (inputError['min']) {
+        $scope.errors.push(inputName+": too small");
+      } else if (inputError['max']) {
+        $scope.errors.push(inputName+": too large");
+      }
     };
   }, true);
 
