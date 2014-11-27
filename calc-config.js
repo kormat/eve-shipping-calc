@@ -5,6 +5,17 @@ var ESCconfig = {
     shorturl: "http://tinyurl.com/eveShipCalc",
     docs: "http://lmgtfy.com/?q=ACME+docs",
   },
+  rules: {
+    maxVolume: 320,
+    egVolume: 25,
+    maxValue: 1000,
+    egValue: 95,
+    containersAllowed: true,
+    containerSurcharge: 5,
+    credit: 10,
+    egCredit: 5,
+    creditText: "per month",
+  },
   routes: [
     { name:"unset", text:"Pick a route..." }, // Do Not Remove
     { name:"jita-amarr", text:"Jita<->Amarr" },

@@ -54,7 +54,11 @@ select {
   -webkit-box-sizing:border-box;
 }
 
-input {
+select:disabled {
+  background-color: #ccc;
+}
+
+input[type='number'] {
   width: 13em;
   -ms-box-sizing:border-box;
   -moz-box-sizing:border-box;

@@ -9,8 +9,13 @@
   </head>
 
   <body>
-    <h2>{{cfg.meta.header || "Eve Shipping Calculator"}} <a ng-if="cfg.meta.shorturl" ng-href="{{cfg.meta.shorturl}}">{{cfg.meta.shorturl}}</a></h2>
-    <h3 ng-if="cfg.meta.docs">Docs: <a href="{{cfg.meta.docs}}">{{cfg.meta.docs}}</a></h3>
+    <h2>
+      {{cfg.meta.header || "Eve Shipping Calculator"}}
+      <a ng-if="cfg.meta.shorturl" ng-href="{{cfg.meta.shorturl}}">{{cfg.meta.shorturl}}</a>
+    </h2>
+    <h3 ng-if="cfg.meta.docs">
+      Docs: <a href="{{cfg.meta.docs}}">{{cfg.meta.docs}}</a>
+    </h3>
 
     <form novalidate name=calcForm>
     <div class="left">
@@ -19,48 +24,64 @@
         <h3 class="inline">Route:</h3>
       </div>
       <div class="clear">
-        <label for "formRoute">Route</label>
+        <label>Route</label>
         <select ng-model="formRoute" ng-options="route.text for route in routes">
         </select>
       </div>
       <div class="clear">
-        <label for "formPickup">Pickup</label>
-        <select ng-model="formPickup" ng-options="s.name for s in routeStations">
+        <label>Pickup</label>
+        <select ng-model="formPickup"
+                ng-options="s.name for s in routeStations"
+                ng-disabled="formRoute.name === 'unset'">
         </select>
         <span ng-show="formPickup.url">
           (<a href={{formPickup.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formPickup.id)">info</span></span>)
         </span>
       </div>
       <div class="clear">
-        <label for "formDest">Destination</label>
-        <select ng-model="formDest" ng-options="s.name for s in destStations">
+        <label>Destination</label>
+        <select ng-model="formDest"
+                ng-options="s.name for s in destStations"
+                ng-disabled="formRoute.name === 'unset'">
         </select>
-        <span ng-show="formDest">
+        <span ng-show="formDest.url">
           (<a href={{formDest.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formDest.id)">info</span></span>)
         </span>
       </div>
       <div class="clear">
-        <label for "formVol" ng-class="{error: !calcForm.vol_input.$valid}">Volume (k m<sup>3</sup>)</label>
-        <input name=vol_input type=number ng-model="formVol" min="0" max="{{maxVolume}}" placeholder="E.g. 30">
-        (<span ng-class="{error: calcForm.vol_input.$error['max']}">max {{maxVolume}}k m<sup>3</sup></span>)
+        <label ng-class="{error: !calcForm.vol_input.$valid}">Volume (k m<sup>3</sup>)</label>
+        <input name=vol_input
+               type=number
+               ng-model="formVol"
+               min="0"
+               max="{{cfg.rules.maxVolume}}"
+               placeholder="E.g. {{cfg.rules.egVolume || '30'}}">
+        (<span ng-class="{error: calcForm.vol_input.$error['max']}">max {{cfg.rules.maxVolume}}k m<sup>3</sup></span>)
       </div>
       <div class="clear">
-        <label for "form_val">Value (Mil ISK)</label>
-        <input name=val_input type=number ng-model="form_val">
-        <font ng-show="form_val <= maxValue">(max {{maxValue}}Mil ISK)</font>
-        <font color="red" ng-show="form_val > maxValue">(max {{maxValue}}Mil ISK)</font>
-        <font color="red" ng-show="calcForm.val_input.$error.number">Not a valid number!</font>
+        <label ng-class="{error: !calcForm.val_input.$valid}">Value (Mil ISK)</label>
+        <input name=val_input
+               type=number
+               ng-model="formVal"
+               min="0"
+               max="{{cfg.rules.maxValue}}"
+               placeholder="E.g. {{cfg.rules.egValue || '30'}}">
+        (<span ng-class="{error: calcForm.val_input.$error['max']}">max {{cfg.rules.maxValue}}Mil ISK</span>)
       </div>
-      <div class="clear">
-        <label for "form_container">Includes assembled containers/ships?</label>
+      <div class="clear" ng-show="cfg.rules.credit > 0">
+        <label ng-class="{error: !calcForm.credit_input.$valid}">Credit (Mil ISK)</label>
+        <input name=credit_input
+               type=number
+               ng-model="formCredit"
+               min="0"
+               max="{{cfg.rules.credit}}"
+               placeholder="E.g. {{cfg.rules.egCredit || '3'}}">
+        (<span ng-class="{error: calcForm.credit_input.$error['max']}">{{cfg.rules.credit}}Mil ISK {{cfg.rules.creditText}}</span>)
+      </div>
+      <div class="clear" ng-show="cfg.rules.containersAllowed">
+        <label>Includes assembled containers/ships?</label>
         <input type="checkbox" ng-model="form_container">
-      </div>
-      <div class="clear">
-        <label for "creditDiscount">Credit (Mil ISK)</label>
-        <input name=credit_input type=number ng-model="creditDiscount">
-        <font ng-show="creditDiscount <= 20">(20M ISK per month)</font>
-        <font color="red" ng-show="creditDiscount > 20">(20M ISK per month)</font>
-        <font color="red" ng-show="calcForm.credit_input.$error.number">Not a valid number!</font>
+        <span ng-show="cfg.rules.containerSurcharge > 0">({{cfg.rules.containerSurcharge}}Mil ISK surcharge)</span>
       </div>
       <div class="clear error" ng-show="errors">
         Errors:

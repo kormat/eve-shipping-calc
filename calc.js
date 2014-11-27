@@ -19,6 +19,8 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.stations = $scope.cfg.stations;
   $scope.formRoute = $scope.routes[0];
   $scope.formVol = "";
+  $scope.formVal = "";
+  $scope.formCredit = "";
   $scope.errors = [];
 
   $scope.status = "Initial";
@@ -29,8 +31,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.permaLink = undefined;
   $scope.desc = "";
   $scope.inEve = typeof CCPEVE === "object";
-  $scope.maxVolume = 320;
-  $scope.maxValue = 1000;
 
   if($scope.inEve) {
     $scope.status = "requesting trust";
@@ -70,10 +70,16 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
   });
 
-  $scope.$watch('[formVol]', function(newVal, oldVal) {
+  $scope.$watch('[formVol, formVal, formCredit]', function(newVal, oldVal) {
     $scope.errors = [];
     if (! $scope.calcForm.vol_input.$valid) {
-      $scope.errors.push("Invalid Volume value");
+      $scope.errors.push("Invalid Volume input");
+    };
+    if (! $scope.calcForm.val_input.$valid) {
+      $scope.errors.push("Invalid Value input");
+    };
+    if (! $scope.calcForm.credit_input.$valid) {
+      $scope.errors.push("Invalid Credit input");
     };
   }, true);
 
