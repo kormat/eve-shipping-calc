@@ -12,3 +12,9 @@ TODO:
 For debugging in chrome's console:
 var scope = angular.element($("html")).scope()
 scope.$apply();
+
+Route/station selection algorithm:
+- On init, route should be set to "Pick", pickup/destination should be set to none.
+- When route is selected:
+  - If pickup is still valid, don't change it.
+  - Otherwise, set pickup to "Pick"

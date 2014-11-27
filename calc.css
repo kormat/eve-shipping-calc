@@ -48,6 +48,18 @@ span.ingame {
 
 select {
   width: 13em;
+  -ms-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+}
+
+input {
+  width: 13em;
+  -ms-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
 }
 
 button {
@@ -78,4 +90,8 @@ div.clear {
 
 div.space {
   margin-bottom: 20px;
+}
+
+.error {
+  color: red;
 }

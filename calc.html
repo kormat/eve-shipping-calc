@@ -40,11 +40,9 @@
         </span>
       </div>
       <div class="clear">
-        <label for "form_vol">Volume (k m<sup>3</sup>)</label>
-        <input name=vol_input type=number ng-model="form_vol">
-        <font ng-show="form_vol <= maxVolume">(max {{maxVolume}}k m<sup>3</sup>)</font>
-        <font color="red" ng-show="form_vol > maxVolume">(max {{maxVolume}}k m<sup>3</sup>)</font>
-        <font color="red" ng-show="calcForm.vol_input.$error.number">Not a valid number!</font>
+        <label for "formVol" ng-class="{error: !calcForm.vol_input.$valid}">Volume (k m<sup>3</sup>)</label>
+        <input name=vol_input type=number ng-model="formVol" min="0" max="{{maxVolume}}" placeholder="E.g. 30">
+        (<span ng-class="{error: calcForm.vol_input.$error['max']}">max {{maxVolume}}k m<sup>3</sup></span>)
       </div>
       <div class="clear">
         <label for "form_val">Value (Mil ISK)</label>
@@ -63,6 +61,12 @@
         <font ng-show="creditDiscount <= 20">(20M ISK per month)</font>
         <font color="red" ng-show="creditDiscount > 20">(20M ISK per month)</font>
         <font color="red" ng-show="calcForm.credit_input.$error.number">Not a valid number!</font>
+      </div>
+      <div class="clear error" ng-show="errors">
+        Errors:
+        <ul>
+          <li ng-repeat="error in errors">{{error}}</li>
+        </ul>
       </div>
     </div>
 

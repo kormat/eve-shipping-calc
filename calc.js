@@ -18,13 +18,11 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.routes = $scope.cfg.routes;
   $scope.stations = $scope.cfg.stations;
   $scope.formRoute = $scope.routes[0];
+  $scope.formVol = "";
+  $scope.errors = [];
 
   $scope.status = "Initial";
   $scope.totalCost = undefined;
-  $scope.form_pickup = "";
-  $scope.form_dest = "";
-  $scope.form_vol = 50;
-  $scope.form_val = 100;
   $scope.form_container = false;
   $scope.creditDiscount = 0;
   $scope.oldSavedState = {};
@@ -71,6 +69,14 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.formDest = $scope.destStations[1];
     };
   });
+
+  $scope.$watch('[formVol]', function(newVal, oldVal) {
+    $scope.errors = [];
+    if (! $scope.calcForm.vol_input.$valid) {
+      $scope.errors.push("Invalid Volume value");
+    };
+  }, true);
+
 
   $scope.updateStations = function() {
     if (!$scope.findStation($scope.formPickup.id, $scope.routeStations)) {
