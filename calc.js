@@ -46,6 +46,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
 
   };
 
+
   //******************************************************
   // Watches - react to model changes
   //******************************************************
@@ -83,18 +84,40 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
   }, true);
 
-  $scope.logStationChange = function(name, newVal, oldVal) {
-    console.log(name+" changed from "
-      +oldVal
-      +"("
-      +($scope.stations[oldVal].name || "none")
-      +") to "
-      +newVal
-      +"("
-      +($scope.stations[newVal].name || "none")
-      +")");
-  };
 
+  //******************************************************
+  // Routes and stations
+  //******************************************************
+
+  $scope.filterStations = function(skip) {
+    var stns = [];
+    var routeStns = $scope.routeStations[$scope.formRoute.name].stns;
+
+    for(var i in routeStns) {
+      var routeStn = routeStns[i];
+      var stn = $scope.stations[routeStn.id];
+      if (skip !== null && skip.id !== "unset" && stn.id === skip.id) {
+        continue;
+      }
+      stns.push(stn);
+      /*
+      if(!stn.destOnly)
+        pickupStations.push(stn);
+      if(!stn.pickupOnly && stn != $scope.form_pickup) {
+        if(angular.isUndefined(pickup.validDests) ||
+            (pickup.validDests.indexOf(stn.name) > -1))
+          destStations.push(stn);
+        };
+      */
+    };
+    if (stns.length === 0) {
+      return [$scope.noneStation];
+    } else {
+      // Prepend the "unset" station to the start of the list
+      stns.unshift($scope.unsetStation);
+      return stns;
+    }
+  }
 
   $scope.updateStations = function() {
     if (!$scope.findStation($scope.formPickup.id, $scope.pickupStations)) {
@@ -146,6 +169,11 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
     return "highnull";
   }
+
+
+  //******************************************************
+  // Cost calculations
+  //******************************************************
 
   $scope.updateCosts = function() {
     $scope.status = "updateCosts()";
@@ -228,35 +256,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.desc = desc.join(", ");
   };
 
-  $scope.filterStations = function(skip) {
-    var stns = [];
-    var routeStns = $scope.routeStations[$scope.formRoute.name].stns;
-
-    for(var i in routeStns) {
-      var routeStn = routeStns[i];
-      var stn = $scope.stations[routeStn.id];
-      if (skip !== null && skip.id !== "unset" && stn.id === skip.id) {
-        continue;
-      }
-      stns.push(stn);
-      /*
-      if(!stn.destOnly)
-        pickupStations.push(stn);
-      if(!stn.pickupOnly && stn != $scope.form_pickup) {
-        if(angular.isUndefined(pickup.validDests) ||
-            (pickup.validDests.indexOf(stn.name) > -1))
-          destStations.push(stn);
-        };
-      */
-    };
-    if (stns.length === 0) {
-      return [$scope.noneStation];
-    } else {
-      // Prepend the "unset" station to the start of the list
-      stns.unshift($scope.unsetStation);
-      return stns;
-    }
-  }
 
   //******************************************************
   // IGB (In-Game Browser) utility functions
@@ -273,6 +272,23 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
 
   $scope.createContract = function() {
     CCPEVE.createContract(3, $scope.formPickup.id);
+  };
+
+
+  //******************************************************
+  // Utility functions
+  //******************************************************
+
+  $scope.logStationChange = function(name, newVal, oldVal) {
+    console.log(name+" changed from "
+      +oldVal
+      +"("
+      +($scope.stations[oldVal].name || "none")
+      +") to "
+      +newVal
+      +"("
+      +($scope.stations[newVal].name || "none")
+      +")");
   };
 
 
