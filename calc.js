@@ -15,7 +15,13 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.unsetStation = $scope.stations["unset"];
 
     //Initialise routes/stations:
-    $scope.formRoute = $scope.routes[0];
+
+    //If there's only one route to choose (not counting the "unset" placeholder),
+    //just set the route directly to that
+    if ($scope.routes.length == 2)
+      $scope.formRoute = $scope.routes[1];
+    else
+      $scope.formRoute = $scope.routes[0];
     $scope.pickupStations = [$scope.noneStation];
     $scope.destStations = [$scope.noneStation];
     $scope.formPickup = $scope.pickupStations[0];
@@ -212,35 +218,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
     return null;
   };
-
-/*
-  $scope.stations = [
-    {
-      id: 60008494,
-      name: 'Amarr',
-      full: 'Amarr VIII (Oris) - Emperor Family Academy',
-      url: 'http://evemaps.dotlan.net/station/Amarr_VIII_(Oris)_-_Emperor_Family_Academy',
-      route: "catch",
-      sec: "high",
-    },
-    {
-      id: 60003616,
-      name: 'Dabrid',
-      full: 'Dabrid V - Moon 1 - Caldari Business Tribunal Accounting',
-      url: 'http://evemaps.dotlan.net/station/Dabrid_V_-_Moon_1_-_Caldari_Business_Tribunal_Accounting',
-      route: "catch",
-      sec: "high",
-    },
-    {
-      id: 61000744,
-      name: '4-07MU',
-      full: '4-07MU V - The Thalamus',
-      url: 'http://evemaps.dotlan.net/outpost/4-07MU',
-      route: "catch",
-      sec: "null",
-    },
-    ];
-  */
 
   $scope.filterStations = function(skip) {
     var stns = [];
