@@ -39,17 +39,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
 
   };
 
-  $scope.showStn = function(id) {
-    CCPEVE.showInfo(3867, id);
-  };
-
-  $scope.showCorp = function() {
-    CCPEVE.showInfo(2, 98237970)
-  };
-
-  $scope.createContract = function() {
-    CCPEVE.createContract(3, $scope.form_pickup.id);
-  };
 
   $scope.$watch('formRoute.name', function(newVal, oldVal) {
     console.log("formRoute changed from "+oldVal+" to "+newVal);
@@ -274,6 +263,23 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.form_dest = destStations[0];
       */
   }
+
+  //******************************************************
+  // IGB (In-Game Browser) utility functions
+  //******************************************************
+
+  $scope.showStn = function(id) {
+    CCPEVE.showInfo(3867, id);
+  };
+
+  $scope.showCorp = function() {
+    CCPEVE.showInfo(2, 98237970)
+  };
+
+  $scope.createContract = function() {
+    CCPEVE.createContract(3, $scope.formPickup.id);
+  };
+
 
   //Now that everything is defined, finally call init()
   $scope.init();
