@@ -101,6 +101,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       }
       stns.push(stn);
     };
+
     if (stns.length === 0) {
       return [$scope.noneStation];
     } else {
@@ -134,13 +135,13 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   };
 
   $scope.findStation = function(id, stations) {
-    console.log("findStation: id:"+id);
+    //console.log("findStation: id:"+id);
     var index = $scope.stationIndex(id, stations)
     return stations[index]
   };
 
   $scope.stationIndex = function(id, stations) {
-    console.log("stationIndex: id:"+id);
+    //console.log("stationIndex: id:"+id);
     for(var i=0; i < stations.length; i++) {
       var stn = stations[i];
       if(stn.id === id)
@@ -150,15 +151,39 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   };
 
   $scope.routeType = function() {
-    var curRouteStations = $scope.routeStations[$scope.formRoute.name].stns;
-    pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteStations);
-    destIdx = $scope.stationIndex($scope.formDest.id, curRouteStations);
-    console.log("routeType: pickupIdx:"+pickupIdx+" destIdx:"+destIdx);
     var types = [];
-    if (pickupIdx < destIdx) {
-      //for(var i=0; i < $scope.routeStations[kkk
+    var curRouteStations = $scope.routeStations[$scope.formRoute.name].stns;
+    var pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteStations);
+    var destIdx = $scope.stationIndex($scope.formDest.id, curRouteStations);
+    console.log(
+        "routeType: pickup Id:"
+        +$scope.formPickup.id
+        +" index:"
+        +pickupIdx
+        +" destination Id:"
+        +$scope.formDest.id
+        +" index:"
+        +destIdx);
+    if(pickupIdx < 0 || destIdx < 0)
+      return "incomplete";
+
+    var step = 1;
+    var start = pickupIdx;
+    var end = destIdx + 1; //So we include the destIdx in the loop
+    if (pickupIdx > destIdx) {
+      step = -1;
+      start = pickupIdx;
+      end = destIdx -1; //So we include the pickupIdx in the loop
     };
-    return "highnull";
+
+    for(var i=start; i!=end; i+=step) {
+      var stnId = curRouteStations[i].id;
+      var name = $scope.stations[stnId].name;
+      types.push($scope.stations[stnId].sec);
+      console.log("Station:"+name);
+    };
+    console.log("Sec types:"+types);
+    return types;
   }
 
 
