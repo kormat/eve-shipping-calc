@@ -59,20 +59,11 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.$watch('formPickup.id', function(newVal, oldVal) {
     $scope.logStationChange("Pickup", newVal, oldVal);
     $scope.updateStations();
-
-    // If the current dest value is already a valid station, then don't change it.
-    if (!$scope.findStation($scope.formDest.id, $scope.destStations)) {
-      $scope.formDest = $scope.destStations[0];
-    };
-    // If there's only one station to choose (not counting the "unset"
-    // placeholder), just set destination directly to that
-    if ($scope.destStations.length === 2) {
-      $scope.formDest = $scope.destStations[1];
-    };
   });
 
   $scope.$watch('formDest.id', function(newVal, oldVal) {
     $scope.logStationChange("Destination", newVal, oldVal);
+    $scope.routeType();
   });
 
   $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]', function(newVal, oldVal) {
@@ -110,21 +101,49 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       // Only change the current pickup station if it isn't valid for the current route
       $scope.formPickup = $scope.pickupStations[0];
     };
+
     // Recalculate the valid destination stations
     $scope.destStations = $scope.filterStations($scope.formPickup);
+
     if (!$scope.findStation($scope.formDest.id, $scope.destStations)) {
       // Only change the current pickup station if it isn't valid for the current route
       $scope.formDest = $scope.destStations[0];
     };
+
+    // If there's only one station to choose (not counting the "unset"
+    // placeholder), just set destination directly to that
+    if ($scope.destStations.length === 2) {
+      $scope.formDest = $scope.destStations[1];
+    };
+
+    $scope.routeType();
   };
 
-  $scope.routeType = function(pickup, dest) {
-    if(pickup == "" || dest == "")
-      return "incomplete";
-    if(pickup.sec == "high" && dest.sec == "high")
-      return "high";
-    if(pickup.sec == "null" && dest.sec == "null")
-      return "null";
+  $scope.findStation = function(id, stations) {
+    console.log("findStation: id:"+id);
+    var index = $scope.stationIndex(id, stations)
+    return stations[index]
+  };
+
+  $scope.stationIndex = function(id, stations) {
+    console.log("stationIndex: id:"+id);
+    for(var i=0; i < stations.length; i++) {
+      var stn = stations[i];
+      if(stn.id === id)
+        return i;
+    };
+    return -1;
+  };
+
+  $scope.routeType = function() {
+    var curRouteStations = $scope.routeStations[$scope.formRoute.name].stns;
+    pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteStations);
+    destIdx = $scope.stationIndex($scope.formDest.id, curRouteStations);
+    console.log("routeType: pickupIdx:"+pickupIdx+" destIdx:"+destIdx);
+    var types = [];
+    if (pickupIdx < destIdx) {
+      //for(var i=0; i < $scope.routeStations[kkk
+    };
     return "highnull";
   }
 
@@ -207,16 +226,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     if($scope.form_container)
       desc.push("container");
     $scope.desc = desc.join(", ");
-  };
-
-  $scope.findStation = function(id, stations) {
-    //console.log("findStation: id:"+id);
-    for(var i in stations) {
-      var stn = stations[i];
-      if(stn.id === id)
-        return stn;
-    };
-    return null;
   };
 
   $scope.filterStations = function(skip) {
