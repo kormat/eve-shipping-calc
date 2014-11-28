@@ -31,7 +31,7 @@
       <div class="clear">
         <label>Pickup</label>
         <select ng-model="formPickup"
-                ng-options="s.name for s in routeStations"
+                ng-options="s.name for s in pickupStations"
                 ng-disabled="formRoute.name === 'unset'">
         </select>
         <span ng-show="formPickup.url">
@@ -97,9 +97,9 @@
       </div>
       <div class="clear">
         <label>Route type</label>
-        <span ng-show="form_pickup">{{form_pickup.sec}}</span>
-        <span ng-show="form_pickup || form_dest"> -> </span>
-        <span ng-show="form_dest">{{form_dest.sec}}</span>
+        <span ng-show="formPickup">{{formPickup.sec}}</span>
+        <span ng-show="formPickup || formDest"> -> </span>
+        <span ng-show="formDest">{{formDest.sec}}</span>
       </div>
       <div class="clear">
         <label>High-sec cost</label>
