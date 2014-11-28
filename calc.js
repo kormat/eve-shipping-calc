@@ -1,40 +1,42 @@
 var eveShippingCalc = angular.module('eveShippingCalc',[]);
 
-var params = ["route", "pickup", "dest", "vol", "val", "cntr", "credit"];
-var param_map = {
-  "route": "form_route",
-  "pickup": "form_pickup",
-  "dest": "form_dest",
-  "vol": "form_vol",
-  "val": "form_val",
-  "cntr": "form_container",
-  "credit": "creditDiscount",
-};
 var tradeHubs = ["Amarr"];
 
 eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', function($scope, $window, $location) {
   $scope.location = $location
   $scope.cfg = $window.ESCconfig;
-  $scope.routes = $scope.cfg.routes;
-  $scope.stations = $scope.cfg.stations;
-  $scope.formRoute = $scope.routes[0];
-  $scope.formVol = "";
-  $scope.formVal = "";
-  $scope.formCredit = "";
-  $scope.errors = [];
 
-  $scope.status = "Initial";
-  $scope.totalCost = undefined;
-  $scope.form_container = false;
-  $scope.creditDiscount = 0;
-  $scope.oldSavedState = {};
-  $scope.permaLink = undefined;
-  $scope.desc = "";
-  $scope.inEve = typeof CCPEVE === "object";
+  $scope.init = function() {
+    //Useful aliases:
+    $scope.routes = $scope.cfg.routes;
+    $scope.stations = $scope.cfg.stations;
+    $scope.noneStation = $scope.stations[0];
+    $scope.unsetStation = $scope.stations[1];
 
-  if($scope.inEve) {
-    $scope.status = "requesting trust";
-    CCPEVE.requestTrust("http://diamond.ichbinn.net/knees-calc/*");
+    //Initialise routes/stations:
+    $scope.formRoute = $scope.routes[0];
+    $scope.routeStations = [$scope.noneStation];
+    $scope.destStations = [$scope.noneStation];
+    $scope.formPickup = $scope.routeStations[0];
+    $scope.formDest = $scope.routeStations[0];
+
+    $scope.formVol = "";
+    $scope.formVal = "";
+    $scope.formCredit = "";
+    $scope.errors = [];
+    $scope.status = "Initial";
+    $scope.totalCost = undefined;
+    $scope.desc = "";
+    $scope.inEve = typeof CCPEVE === "object";
+
+    var url = $scope.location.absUrl();
+    var trustUrl = url.substring(0, url.lastIndexOf('/')) + "/*";
+
+    if($scope.inEve) {
+      console.log("requesting trust for " + trustUrl);
+      var ret = CCPEVE.requestTrust(trustUrl);
+    };
+
   };
 
   $scope.showStn = function(id) {
@@ -272,10 +274,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.form_dest = destStations[0];
       */
   }
-  $scope.noneStation = $scope.findStation("none", $scope.stations)
-  $scope.unsetStation = $scope.findStation("unset", $scope.stations)
-  $scope.routeStations = [$scope.noneStation];
-  $scope.destStations = [$scope.noneStation];
-  $scope.formPickup = $scope.routeStations[0];
-  $scope.formDest = $scope.routeStations[0];
+
+  //Now that everything is defined, finally call init()
+  $scope.init();
 }]);
