@@ -100,15 +100,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
         continue;
       }
       stns.push(stn);
-      /*
-      if(!stn.destOnly)
-        pickupStations.push(stn);
-      if(!stn.pickupOnly && stn != $scope.form_pickup) {
-        if(angular.isUndefined(pickup.validDests) ||
-            (pickup.validDests.indexOf(stn.name) > -1))
-          destStations.push(stn);
-        };
-      */
     };
     if (stns.length === 0) {
       return [$scope.noneStation];
