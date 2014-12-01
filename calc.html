@@ -63,9 +63,10 @@
         <input name=val_input
                type=number
                ng-model="formVal"
+               ng-disabled="! hasHighsecSection()"
                min="0"
                max="{{cfg.rules.maxValue}}"
-               placeholder="E.g. {{cfg.rules.egValue || '30'}}">
+               placeholder="E.g. {{cfg.rules.egValue || '30'}} (high->high only)">
         (<span ng-class="{error: calcForm.val_input.$error['max']}">max {{cfg.rules.maxValue}}Mil ISK</span>)
       </div>
       <div class="clear" ng-show="cfg.rules.credit > 0">
@@ -97,7 +98,7 @@
       </div>
       <div class="clear">
         <label>Route type</label>
-        {{routeType().join(" -> ")}}
+        {{routeType.join(" -> ")}}
       </div>
       <div class="clear">
         <label>High-sec cost</label>

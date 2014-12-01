@@ -64,7 +64,9 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
 
   $scope.$watch('formDest.id', function(newVal, oldVal) {
     $scope.logStationChange("Destination", newVal, oldVal);
-    $scope.routeType();
+    // Changing the destination station can't change the valid stations, so no
+    // need to call updateStations()
+    $scope.routeType = $scope.getRouteType();
   });
 
   $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]', function(newVal, oldVal) {
@@ -131,7 +133,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.formDest = $scope.destStations[1];
     };
 
-    $scope.routeType();
+    $scope.routeType = $scope.getRouteType();
   };
 
   $scope.findStation = function(id, stations) {
@@ -150,13 +152,13 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     return -1;
   };
 
-  $scope.routeType = function() {
+  $scope.getRouteType = function() {
     var types = [];
     var curRouteStations = $scope.routeStations[$scope.formRoute.name].stns;
     var pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteStations);
     var destIdx = $scope.stationIndex($scope.formDest.id, curRouteStations);
     console.log(
-        "routeType: pickup Id:"
+        "getRouteType: pickup Id:"
         +$scope.formPickup.id
         +" index:"
         +pickupIdx
@@ -184,7 +186,21 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
     console.log("Sec types:"+types);
     return types;
-  }
+  };
+
+  $scope.hasHighsecSection = function() {
+    var highsec = 0;
+    for(var i=0; i < $scope.routeType.length; i++) {
+      if($scope.routeType[i] !== "high") {
+        highsec = 0;
+        continue;
+      };
+      highsec++;
+      if(highsec > 1)
+        return true;
+    };
+    return false;
+  };
 
 
   //******************************************************
