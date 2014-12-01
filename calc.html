@@ -97,9 +97,7 @@
       </div>
       <div class="clear">
         <label>Route type</label>
-        <span ng-show="formPickup">{{formPickup.sec}}</span>
-        <span ng-show="formPickup || formDest"> -> </span>
-        <span ng-show="formDest">{{formDest.sec}}</span>
+        {{routeType().join(" -> ")}}
       </div>
       <div class="clear">
         <label>High-sec cost</label>

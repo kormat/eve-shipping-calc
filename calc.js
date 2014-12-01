@@ -165,7 +165,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
         +" index:"
         +destIdx);
     if(pickupIdx < 0 || destIdx < 0)
-      return "incomplete";
+      return [];
 
     var step = 1;
     var start = pickupIdx;
