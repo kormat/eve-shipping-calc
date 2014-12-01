@@ -4,6 +4,10 @@ var ESCconfig = {
     header: "ACME Shipping Company",
     shorturl: "http://tinyurl.com/eveShipCalc",
     docs: "http://lmgtfy.com/?q=ACME+docs",
+    corpName: "ACME Corp",
+    corpId: 98186077,
+    expiration: "3 Days",
+    completion: 1,
   },
   rules: {
     maxVolume: 320,

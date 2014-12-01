@@ -33,7 +33,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.formVal = "";
     $scope.formCredit = "";
     $scope.errors = [];
-    $scope.status = "Initial";
     $scope.volPrice = undefined;
     $scope.volPriceDesc = "";
     $scope.valPrice = undefined;
@@ -41,7 +40,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.containerPrice = undefined;
     $scope.totalPrice = undefined;
 
-    $scope.desc = "";
+    $scope.contractDesc = "";
     $scope.inEve = typeof CCPEVE === "object";
 
     var url = $scope.location.absUrl();
@@ -121,6 +120,12 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   $scope.$watch('[volPrice, valPrice, containerPrice, formCredit]',
       function(newVal, oldVal) {
         $scope.updateTotalPrice();
+      }, true);
+
+  // Keep contract description updated
+  $scope.$watch('[formVal, formCredit, formContainer]',
+      function(newVal, oldVal) {
+        $scope.updateDescription();
       }, true);
 
   //******************************************************
@@ -314,16 +319,15 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
   };
 
-  $scope.calcDescription = function() {
-    $scope.status = "calcDescription()";
+  $scope.updateDescription = function() {
     var desc = []
-    if($scope.form_val)
-      desc.push($scope.form_val+"M value");
-    if($scope.creditDiscount)
-      desc.push($scope.creditDiscount+"M credit");
-    if($scope.form_container)
+    if($scope.formVal)
+      desc.push($scope.formVal.toFixed()+"M value");
+    if($scope.formCredit)
+      desc.push($scope.formCredit.toFixed(2)+"M credit");
+    if($scope.formContainer)
       desc.push("container");
-    $scope.desc = desc.join(", ");
+    $scope.contractDesc = desc.join(", ");
   };
 
 
@@ -336,8 +340,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   };
 
   $scope.showCorp = function() {
-    //FIXME(kormat): un-hardcode corp id
-    CCPEVE.showInfo(2, 98237970)
+    CCPEVE.showInfo(2, $scope.cfg.meta.corpId)
   };
 
   $scope.createContract = function() {

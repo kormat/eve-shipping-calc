@@ -130,7 +130,7 @@
     <div class="footer">
       <div class="space">
         <h3 class="inline">Contract details:</h3>
-        <span ng-show="inEve && form_pickup">
+        <span ng-show="inEve && formPickup.id !== 'none' && formPickup.id !== 'unset'">
           (<span class="ingame" ng-click="createContract()">createContract</span>)
         </span>
       </div>
@@ -140,22 +140,22 @@
       </div>
       <div class="clear">
         <label>Availability</label>
-        <input readonly size=30 value="Never Bend The Deadline">
+        <input readonly size=30 value="{{cfg.meta.corpName}}">
         <span ng-show="inEve">
           (<span class="ingame" ng-show="inEve" ng-click="showCorp()">info</span>)
         </span>
       </div>
       <div class="clear">
         <label>Pickup station</label>
-        {{form_pickup.full}}
+        {{formPickup.full}}
       </div>
       <div class="clear">
         <label>Ship To</label>
-        <input readonly size=30 value="{{form_dest.full}}">
+        <input readonly size=30 value="{{formDest.full}}">
       </div>
       <div class="clear">
         <label>Reward</label>
-        <input readonly size=30 value="{{totalCost * 1000000}}">
+        <input readonly size=30 value="{{(totalPrice * 1000000).toFixed()}}">ISK
       </div>
       <div class="clear">
         <label>Collateral</label>
@@ -163,15 +163,15 @@
       </div>
       <div class="clear">
         <label>Expiration</label>
-        1 Week
+        {{cfg.meta.expiration}}
       </div>
       <div class="clear">
         <label>Days to complete</label>
-        <input readonly value=7>
+        <input readonly value={{cfg.meta.completion}}>
       </div>
       <div class="clear">
         <label>Description</label>
-        <input readonly size=30 value="{{desc}}">
+        <input readonly size=30 value="{{contractDesc}}">
       </div>
     </div>
     </form>
