@@ -59,40 +59,31 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   // Watches - react to model changes
   //******************************************************
 
-  $scope.$watch('formRoute.name', function(newVal, oldVal) {
-    console.log("formRoute changed from "+oldVal+" to "+newVal);
-    $scope.pickupStations = $scope.filterStations(null);
-    $scope.updateStations();
-  });
+  $scope.$watch('formRoute.name',
+      function(newVal, oldVal) {
+        console.log("formRoute changed from "+oldVal+" to "+newVal);
+        $scope.pickupStations = $scope.filterStations(null);
+        $scope.updateStations();
+      });
 
-  $scope.$watch('formPickup.id', function(newVal, oldVal) {
-    $scope.logStationChange("Pickup", newVal, oldVal);
-    $scope.updateStations();
-  });
+  $scope.$watch('formPickup.id',
+      function(newVal, oldVal) {
+        $scope.logStationChange("Pickup", newVal, oldVal);
+        $scope.updateStations();
+      });
 
-  $scope.$watch('formDest.id', function(newVal, oldVal) {
-    $scope.logStationChange("Destination", newVal, oldVal);
-    // Changing the destination station can't change the valid stations, so no
-    // need to call updateStations()
-    $scope.updateRouteInfo();
-  });
+  $scope.$watch('formDest.id',
+      function(newVal, oldVal) {
+        $scope.logStationChange("Destination", newVal, oldVal);
+        // Changing the destination station can't change the valid stations, so no
+        // need to call updateStations()
+        $scope.updateRouteInfo();
+      });
 
   $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]',
       function(newVal, oldVal) {
         //console.log("Inputs changed validity:" + JSON.stringify(newVal))
-        $scope.errors = [];
-        var inputNames = ["Volume", "Value", "Credit"]
-        for (var i = 0; i< newVal.length; i++) {
-          var inputError = newVal[i];
-          var inputName = inputNames[i];
-          if (inputError['number']) {
-            $scope.errors.push(inputName+": not a valid number");
-          } else if (inputError['min']) {
-            $scope.errors.push(inputName+": too small");
-          } else if (inputError['max']) {
-            $scope.errors.push(inputName+": too large");
-          }
-        };
+        $scope.updateErrors(newVal, ["Volume", "Value", "Credit"]);
       }, true);
 
   // Keep the Volume price updated
@@ -120,27 +111,16 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       }, true);
 
   // Keep container price updated
-  $scope.$watch('formContainer', function(newVal, oldVal) {
+  $scope.$watch('formContainer',
+      function(newVal, oldVal) {
         console.log("Containers changed: " + newVal);
-        if($scope.formContainer)
-          $scope.containerPrice = $scope.cfg.rules.containerSurcharge;
-        else
-          $scope.containerPrice = 0;
+        $scope.updateContainerPrice();
       });
 
   // Keep total price updated
-  $scope.$watch('[volPrice, valPrice, containerPrice, formCredit]', function(newVal, oldVal) {
-        if($scope.errors.length === 0) {
-          var price = 0;
-          var inputs = [$scope.volPrice, $scope.valPrice, $scope.containerPrice, -$scope.formCredit];
-          for(var i=0; i<inputs.length; i++) {
-            if(angular.isNumber(inputs[i]))
-              price += inputs[i];
-          };
-          $scope.totalPrice = price;
-        } else {
-          $scope.totalPrice = undefined;
-        };
+  $scope.$watch('[volPrice, valPrice, containerPrice, formCredit]',
+      function(newVal, oldVal) {
+        $scope.updateTotalPrice();
       }, true);
 
   //******************************************************
@@ -313,6 +293,27 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     };
   };
 
+  $scope.updateContainerPrice = function() {
+    if($scope.formContainer)
+      $scope.containerPrice = $scope.cfg.rules.containerSurcharge;
+    else
+      $scope.containerPrice = 0;
+  };
+
+  $scope.updateTotalPrice = function() {
+    if($scope.errors.length === 0) {
+      var price = 0;
+      var inputs = [$scope.volPrice, $scope.valPrice, $scope.containerPrice, -$scope.formCredit];
+      for(var i=0; i<inputs.length; i++) {
+        if(angular.isNumber(inputs[i]))
+          price += inputs[i];
+      };
+      $scope.totalPrice = price;
+    } else {
+      $scope.totalPrice = undefined;
+    };
+  }
+
   $scope.updateCosts = function() {
     $scope.status = "updateCosts()";
     $scope.calcHighsecCost($scope.form_route, $scope.form_pickup, $scope.form_dest);
@@ -428,6 +429,21 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       +($scope.stations[newVal].name || "none")
       +")");
   };
+
+  $scope.updateErrors = function(inputErrors, inputNames) {
+    $scope.errors = [];
+    for (var i=0; i<inputErrors.length; i++) {
+      var inputError = inputErrors[i];
+      var inputName = inputNames[i];
+      if (inputError['number']) {
+        $scope.errors.push(inputName+": not a valid number");
+      } else if (inputError['min']) {
+        $scope.errors.push(inputName+": too small");
+      } else if (inputError['max']) {
+        $scope.errors.push(inputName+": too large");
+      }
+    };
+  }
 
 
   //Now that everything is defined, finally call init()
