@@ -79,43 +79,53 @@ var ESCconfig = {
       stns: [], 
     },
     "highway": {
+      valUnit: 100, // prices are per 100Mil ISK value
+      // Higher costs because of going through Niarja.
       stns: [
         { // Jita
           id: 60003760, 
-          volCostNext: [0, 0], // No volume charge
-          valCostNext: [1, 100], // 2M charge per 100M ISK value
+          valCost: 3, // 3Mil ISK charge per 100M ISK value
         },
         { // Amarr
           id: 60008494,
-          volCostPrev: [0, 0], // No volume charge
-          valCostNext: [2, 100], // 2M charge per 100M ISK value
+          valCost: 3, // 3MIl ISK charge per 100M ISK value
         },
       ],
     },
     "lesserHubs": {
+      valUnit: 100, // prices are per 100Mil ISK value
       stns: [
         { // Amarr
           id: 60008494,
-          volCostPrev: [0, 0], // No volume charge
-          valCostNext: [1, 100], // 1M charge per 100M ISK value
-        },
-        { // Hek
-          id: 60005686,
-          volCostPrev: [0, 0], // No volume charge
-          valCostNext: [1, 100], // 1M charge per 100M ISK value
+          valCost: 2.1, // 2.1M charge per 100M ISK value
         },
         { // Rens
           id: 60004588,
-          volCostPrev: [0, 0], // No volume charge
-          valCostNext: [1, 100], // 1M charge per 100M ISK value
+          valCostPrev: 2.1, // 2.1M charge per 100M ISK value
+          valCostNext: 0.7, // 0.7M charge per 100M ISK value
+        },
+        { // Hek
+          id: 60005686,
+          valCost: 0.7, // 0.7M charge per 100M ISK value
         },
       ],
     },
     "suicide": {
+      volUnit: 10, // prices are per 10k m^3 ISK volume
       stns: [
-        { id: 60004588, }, // Rens
-        { id: 60007339, }, // Amamake
-        { id: 60013465, }, // Poitot
+        { // Rens
+          id: 60004588,
+          volCost: 1.6, // 1.6Mil per 10k m^3 volume
+        },
+        { // Amamake
+          id: 60007339,
+          volCostPrev: 1.6, // 1.6Mil per 10k m^3 volume
+          volCostNext: 11.2, // 11.2Mil per 10k m^3 volume
+        },
+        { // Poitot
+          id: 60013465,
+          volCost: 11.2, // 11.2Mil per 10k m^3 volume
+        }, 
       ],
     },
   },
