@@ -20,7 +20,7 @@ var ESCconfig = {
     { name:"unset", text:"Pick a route..." }, // Do Not Remove
     { name:"highway", text:"Market Highway" }, // Jita, Amarr
     { name:"lesserHubs", text:"Lesser hubs" }, // Amarr, Rens, Hek
-    { name:"suicide", text:"Suicide route" }, // Jita, Amamake, Poitot
+    { name:"suicide", text:"Suicide route" }, // Hek, Rens, Amamake, Poitot
   ],
   stations: {
     none: { // Do Not Remove
@@ -112,9 +112,15 @@ var ESCconfig = {
     },
     "suicide": {
       volUnit: 10, // prices are per 10k m^3 ISK volume
+      valUnit: 50, // prices are per 50Mil ISK value
       stns: [
+        { // Hek
+          id: 60005686,
+          valCost: 0.4, // 0.4M charge per 50M ISK value
+        },
         { // Rens
           id: 60004588,
+          valCostPrev: 0.4, // 0.4M charge per 50M ISK value
           volCost: 1.6, // 1.6Mil per 10k m^3 volume
         },
         { // Amamake
