@@ -206,11 +206,9 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     }
 
     routeInfo.volUnit = curRouteMeta["volUnit"];
-    if(routeInfo.volUnit)
-      routeInfo.volCost = 0;
+    routeInfo.volCost = 0;
     routeInfo.valUnit = curRouteMeta["valUnit"];
-    if(routeInfo.valUnit)
-      routeInfo.valCost = 0;
+    routeInfo.valCost = 0;
 
     var step = 1;
     var start = pickupIdx;
@@ -232,14 +230,22 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       console.log("Station:"+name);
       if(i !== destIdx) { // Don't include cost of final station.
         if(routeInfo.volUnit) {
-          routeInfo.volCost += curRouteMeta.stns[i][volCostName] ||  curRouteMeta.stns[i]["volCost"];
+          var cost = curRouteMeta.stns[i][volCostName] ||  curRouteMeta.stns[i]["volCost"];
+          if(cost !== undefined)
+            routeInfo.volCost += cost;
         }
         if(routeInfo.valUnit) {
-          routeInfo.valCost += curRouteMeta.stns[i][valCostName] ||  curRouteMeta.stns[i]["valCost"];
+          var cost = curRouteMeta.stns[i][valCostName] || curRouteMeta.stns[i]["valCost"];
+          if(cost !== undefined)
+            routeInfo.valCost += cost;
         }
       }
     };
 
+    if(routeInfo.volCost === 0)
+      routeInfo.volCost = undefined;
+    if(routeInfo.valCost === 0)
+      routeInfo.valCost = undefined;
     $scope.routeInfo = routeInfo;
 
     console.log("route info: "+JSON.stringify($scope.routeInfo));
