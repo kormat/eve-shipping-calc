@@ -121,9 +121,8 @@
       </div>
       <div class="clear">
         <label>Total cost</label>
-        <span ng-show="totalCost !== ''">
-          <font ng-show="totalCost >= 0">{{totalCost.toFixed(2)}}M</font>
-          <font color=red ng-show="totalCost < 0">{{totalCost.toFixed(2)}}M</font>
+        <span ng-class="{error: totalPrice < 0}" ng-show="totalPrice !== undefined">
+          {{totalPrice.toFixed(2)}}M
         </span>
       </div>
     </div>

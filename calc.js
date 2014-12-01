@@ -39,8 +39,8 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.valPrice = undefined;
     $scope.valPriceDesc = "";
     $scope.containerPrice = undefined;
+    $scope.totalPrice = undefined;
 
-    $scope.totalCost = undefined;
     $scope.desc = "";
     $scope.inEve = typeof CCPEVE === "object";
 
@@ -127,6 +127,21 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
         else
           $scope.containerPrice = 0;
       });
+
+  // Keep total price updated
+  $scope.$watch('[volPrice, valPrice, containerPrice, formCredit]', function(newVal, oldVal) {
+        if($scope.errors.length === 0) {
+          var price = 0;
+          var inputs = [$scope.volPrice, $scope.valPrice, $scope.containerPrice, -$scope.formCredit];
+          for(var i=0; i<inputs.length; i++) {
+            if(angular.isNumber(inputs[i]))
+              price += inputs[i];
+          };
+          $scope.totalPrice = price;
+        } else {
+          $scope.totalPrice = undefined;
+        };
+      }, true);
 
   //******************************************************
   // Routes and stations
