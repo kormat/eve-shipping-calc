@@ -34,6 +34,11 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.formCredit = "";
     $scope.errors = [];
     $scope.status = "Initial";
+    $scope.volPrice = undefined;
+    $scope.volPriceDesc = "";
+    $scope.valPrice = undefined;
+    $scope.valPriceDesc = "";
+
     $scope.totalCost = undefined;
     $scope.desc = "";
     $scope.inEve = typeof CCPEVE === "object";
@@ -71,23 +76,47 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.updateRouteInfo();
   });
 
-  $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]', function(newVal, oldVal) {
-    //console.log("Inputs changed validity:" + JSON.stringify(newVal))
-    $scope.errors = [];
-    var inputNames = ["Volume", "Value", "Credit"]
-    for (var i = 0; i< newVal.length; i++) {
-      var inputError = newVal[i];
-      var inputName = inputNames[i];
-      if (inputError['number']) {
-        $scope.errors.push(inputName+": not a valid number");
-      } else if (inputError['min']) {
-        $scope.errors.push(inputName+": too small");
-      } else if (inputError['max']) {
-        $scope.errors.push(inputName+": too large");
-      }
-    };
-  }, true);
+  $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]',
+      function(newVal, oldVal) {
+        //console.log("Inputs changed validity:" + JSON.stringify(newVal))
+        $scope.errors = [];
+        var inputNames = ["Volume", "Value", "Credit"]
+        for (var i = 0; i< newVal.length; i++) {
+          var inputError = newVal[i];
+          var inputName = inputNames[i];
+          if (inputError['number']) {
+            $scope.errors.push(inputName+": not a valid number");
+          } else if (inputError['min']) {
+            $scope.errors.push(inputName+": too small");
+          } else if (inputError['max']) {
+            $scope.errors.push(inputName+": too large");
+          }
+        };
+      }, true);
 
+  // Keep the Volume price updated
+  $scope.$watch('[routeInfo.volUnit, routeInfo.volCost, formVol, calcForm.vol_input.$valid]',
+      function(newVal, oldVal) {
+        $scope.updatePrice(
+          $scope.routeInfo.volUnit,
+          $scope.routeInfo.volCost,
+          $scope.calcForm.vol_input,
+          "volPrice",
+          "volPriceDesc",
+          "k m^3");
+      }, true);
+
+  // Keep the Value price updated
+  $scope.$watch('[routeInfo.valUnit, routeInfo.valCost, formVal, calcForm.val_input.$valid]',
+      function(newVal, oldVal) {
+        $scope.updatePrice(
+          $scope.routeInfo.valUnit,
+          $scope.routeInfo.valCost,
+          $scope.calcForm.val_input,
+          "valPrice",
+          "valPriceDesc",
+          "Mil ISK");
+      }, true);
 
   //******************************************************
   // Routes and stations
@@ -171,8 +200,10 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
         +$scope.formDest.id
         +" index:"
         +destIdx);
-    if(pickupIdx < 0 || destIdx < 0)
+    if(pickupIdx < 0 || destIdx < 0) {
+      $scope.routeInfo = {};
       return;
+    }
 
     routeInfo.volUnit = curRouteMeta["volUnit"];
     if(routeInfo.volUnit)
@@ -234,6 +265,22 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   //******************************************************
   // Cost calculations
   //******************************************************
+  
+  $scope.updatePrice = function(unit, cost, input, price, desc, unitDesc) {
+    if(unit === undefined
+       || cost === undefined) {
+      $scope[price] = undefined;
+      $scope[desc] = "";
+    } else if(input.$valid === false) {
+      $scope[price] = undefined;
+    } else {
+      $scope[price] = Math.max(1, Math.ceil(input.$modelValue / unit)) * cost;
+      $scope[desc] = cost.toFixed(2)
+             +"Mil per "
+             +unit.toFixed(0)
+             +unitDesc;
+    };
+  };
 
   $scope.updateCosts = function() {
     $scope.status = "updateCosts()";

@@ -67,7 +67,7 @@
                ng-disabled="routeInfo.valCost === undefined"
                min="0"
                max="{{cfg.rules.maxValue}}"
-               placeholder="E.g. {{cfg.rules.egValue || '30'}}">
+               placeholder="E.g. {{cfg.rules.egValue || '40'}}">
         (<span ng-class="{error: calcForm.val_input.$error['max']}">max {{cfg.rules.maxValue}}Mil ISK</span>)
       </div>
       <div class="clear" ng-show="cfg.rules.credit > 0">
@@ -102,14 +102,14 @@
         {{routeSecTypes.join(" -> ")}}
       </div>
       <div class="clear">
-        <label>High-sec cost</label>
-        <span ng-show="highsecCost">{{highsecCost.toFixed(2)}}M</span>
-        <span class="note" ng-show="highsecCost > 0"> ({{highsecRate}})</span>
+        <label>Volume cost</label>
+        <span ng-show="volPrice !== undefined">{{volPrice.toFixed(2)}}M</span>
+        <span class="note" ng-show="volPriceDesc"> ({{volPriceDesc}})</span>
       </div>
       <div class="clear">
-        <label>Null-sec cost</label>
-        <span ng-show="nullsecCost">{{nullsecCost.toFixed(2)}}M</span>
-        <span class="note" ng-show="nullsecCost > 0"> ({{nullsecRate}})</span>
+        <label>Value cost</label>
+        <span ng-show="valPrice !== undefined">{{valPrice.toFixed(2)}}M</span>
+        <span class="note" ng-show="valPriceDesc"> ({{valPriceDesc}})</span>
       </div>
       <div class="clear">
         <label>Containers surcharge</label>
