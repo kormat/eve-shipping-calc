@@ -80,15 +80,35 @@ var ESCconfig = {
     },
     "highway": {
       stns: [
-        { id: 60003760, }, // Jita
-        { id: 60008494, }, // Amarr
+        { // Jita
+          id: 60003760, 
+          volCostNext: [0, 0], // No volume charge
+          valCostNext: [1, 100], // 2M charge per 100M ISK value
+        },
+        { // Amarr
+          id: 60008494,
+          volCostPrev: [0, 0], // No volume charge
+          valCostNext: [2, 100], // 2M charge per 100M ISK value
+        },
       ],
     },
     "lesserHubs": {
       stns: [
-        { id: 60008494, }, // Amarr
-        { id: 60005686, }, // Hek
-        { id: 60004588, }, // Rens
+        { // Amarr
+          id: 60008494,
+          volCostPrev: [0, 0], // No volume charge
+          valCostNext: [1, 100], // 1M charge per 100M ISK value
+        },
+        { // Hek
+          id: 60005686,
+          volCostPrev: [0, 0], // No volume charge
+          valCostNext: [1, 100], // 1M charge per 100M ISK value
+        },
+        { // Rens
+          id: 60004588,
+          volCostPrev: [0, 0], // No volume charge
+          valCostNext: [1, 100], // 1M charge per 100M ISK value
+        },
       ],
     },
     "suicide": {

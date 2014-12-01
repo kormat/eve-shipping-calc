@@ -58,6 +58,10 @@ select:disabled {
   background-color: #ccc;
 }
 
+input:disabled {
+  background-color: #ccc;
+}
+
 input[type='number'] {
   width: 13em;
   -ms-box-sizing:border-box;
