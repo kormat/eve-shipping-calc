@@ -276,7 +276,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
   //******************************************************
   // Cost calculations
   //******************************************************
-  
+
   $scope.updatePrice = function(unit, cost, input, price, desc, unitDesc) {
     if(unit === undefined
        || cost === undefined) {
@@ -312,75 +312,6 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     } else {
       $scope.totalPrice = undefined;
     };
-  }
-
-  $scope.updateCosts = function() {
-    $scope.status = "updateCosts()";
-    $scope.calcHighsecCost($scope.form_route, $scope.form_pickup, $scope.form_dest);
-    $scope.calcNullsecCost($scope.form_route, $scope.form_pickup, $scope.form_dest);
-    $scope.calcContainerCost();
-    $scope.calcTotalCost($scope.form_pickup, $scope.form_dest);
-    $scope.calcDescription();
-  }
-
-  $scope.calcHighsecCost = function(route, pickup, dest) {
-    $scope.status = "calcHighsecCost()";
-    if($scope.routeType(pickup, dest) != "incomplete") {
-      if((tradeHubs.indexOf(pickup.name) > -1) ||
-          (tradeHubs.indexOf(dest.name) > -1)) {
-        $scope.highsecCost = Math.ceil($scope.form_val / 100);
-        $scope.highsecRate = "1M per 100M ISK";
-        return;
-      }
-    }
-    $scope.highsecCost = 0;
-    $scope.highsecRate = "";
-  };
-
-  $scope.calcNullsecCost = function(route, pickup, dest) {
-    $scope.status = "calcNullsecCost()";
-    switch($scope.routeType(pickup, dest)) {
-      case "incomplete":
-      case "high":
-        $scope.nullsecCost = 0;
-        $scope.nullsecRate = "";
-        return;
-    }
-
-    if(route == "catch") {
-      $scope.status = "calcNullsecCost() catch";
-      if(pickup.sec == "high") {
-        $scope.status = "calcNullsecCost() inbound to 4-07";
-        $scope.nullsecCost = Math.ceil($scope.form_vol / 10) * 1.85;
-        $scope.nullsecRate = "1.85M per 10k m^3";
-      } else if (dest.sec == "high") {
-        $scope.status = "calcNullsecCost() outbound from 4-07";
-        $scope.nullsecCost = Math.ceil($scope.form_vol / 10) * 0.9;
-        $scope.nullsecRate = "0.9M per 10k m^3";
-      } else {
-        $scope.nullsecCost = 1;
-        $scope.nullsecRate = [
-          "Error: unknown source/dest pair: ",
-          $scope.form_pickup.name,
-          $scope.form_dest.name].join(",");
-      }
-    }
-  };
-
-  $scope.calcContainerCost = function() {
-    $scope.status = "calcContainerCost()";
-    if($scope.form_container == true)
-      $scope.containerCost = 5;
-    else
-      $scope.containerCost = 0;
-  };
-
-  $scope.calcTotalCost = function(pickup, dest) {
-    $scope.status = "calcTotalCost()"
-    if($scope.routeType(pickup, dest) != "incomplete")
-      $scope.totalCost = $scope.highsecCost + $scope.nullsecCost + $scope.containerCost - $scope.creditDiscount;
-    else
-      $scope.totalCost = "";
   };
 
   $scope.calcDescription = function() {
