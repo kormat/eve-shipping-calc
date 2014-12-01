@@ -7,9 +7,9 @@ var ESCconfig = {
   },
   rules: {
     maxVolume: 320,
-    egVolume: 25,
+    egVolume: "25 (low/nullsec only)",
     maxValue: 1000,
-    egValue: 95,
+    egValue: "95 (highsec only)",
     containersAllowed: true,
     containerSurcharge: 5,
     credit: 10,

@@ -53,6 +53,7 @@
         <input name=vol_input
                type=number
                ng-model="formVol"
+               ng-disabled="routeInfo.volCost === undefined"
                min="0"
                max="{{cfg.rules.maxVolume}}"
                placeholder="E.g. {{cfg.rules.egVolume || '30'}}">
@@ -63,10 +64,10 @@
         <input name=val_input
                type=number
                ng-model="formVal"
-               ng-disabled="! hasHighsecSection()"
+               ng-disabled="routeInfo.valCost === undefined"
                min="0"
                max="{{cfg.rules.maxValue}}"
-               placeholder="E.g. {{cfg.rules.egValue || '30'}} (high->high only)">
+               placeholder="E.g. {{cfg.rules.egValue || '30'}}">
         (<span ng-class="{error: calcForm.val_input.$error['max']}">max {{cfg.rules.maxValue}}Mil ISK</span>)
       </div>
       <div class="clear" ng-show="cfg.rules.credit > 0">
@@ -81,7 +82,7 @@
       </div>
       <div class="clear" ng-show="cfg.rules.containersAllowed">
         <label>Includes assembled containers/ships?</label>
-        <input type="checkbox" ng-model="form_container">
+        <input type="checkbox" ng-model="formContainer">
         <span ng-show="cfg.rules.containerSurcharge > 0">({{cfg.rules.containerSurcharge}}Mil ISK surcharge)</span>
       </div>
       <div class="clear error" ng-show="errors">

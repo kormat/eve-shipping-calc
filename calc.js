@@ -215,10 +215,11 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     console.log("Sec types:"+$scope.routeSecTypes);
   };
 
+  // TODO(kormat): can probably just remove this
   $scope.hasHighsecSection = function() {
     var highsec = 0;
-    for(var i=0; i < $scope.routeInfo.length; i++) {
-      if($scope.routeInfo[i] !== "high") {
+    for(var i=0; i < $scope.routeSecTypes.length; i++) {
+      if($scope.routeSecTypes[i] !== "high") {
         highsec = 0;
         continue;
       };
