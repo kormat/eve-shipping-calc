@@ -38,6 +38,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.volPriceDesc = "";
     $scope.valPrice = undefined;
     $scope.valPriceDesc = "";
+    $scope.containerPrice = undefined;
 
     $scope.totalCost = undefined;
     $scope.desc = "";
@@ -117,6 +118,15 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
           "valPriceDesc",
           "Mil ISK");
       }, true);
+
+  // Keep container price updated
+  $scope.$watch('formContainer', function(newVal, oldVal) {
+        console.log("Containers changed: " + newVal);
+        if($scope.formContainer)
+          $scope.containerPrice = $scope.cfg.rules.containerSurcharge;
+        else
+          $scope.containerPrice = 0;
+      });
 
   //******************************************************
   // Routes and stations

@@ -112,12 +112,12 @@
         <span class="note" ng-show="valPriceDesc"> ({{valPriceDesc}})</span>
       </div>
       <div class="clear">
-        <label>Containers surcharge</label>
-        <span ng-show="containerCost > 0">{{containerCost.toFixed(2)}}M</span>
-      </div>
-      <div class="clear">
         <label>Credit discount</label>
-        <span ng-show="creditDiscount > 0">{{creditDiscount}}M</span>
+        <span ng-show="formCredit">{{formCredit.toFixed(2)}}M</span>
+      </div>
+      <div class="clear" ng-show="cfg.rules.containersAllowed">
+        <label>Containers surcharge</label>
+        <span ng-show="containerPrice > 0">{{containerPrice.toFixed(2)}}M</span>
       </div>
       <div class="clear">
         <label>Total cost</label>
