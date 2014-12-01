@@ -10,7 +10,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     //Useful aliases:
     $scope.routes = $scope.cfg.routes;
     $scope.stations = $scope.cfg.stations;
-    $scope.routeStations = $scope.cfg.routeStations;
+    $scope.routesMeta = $scope.cfg.routesMeta;
     $scope.noneStation = $scope.stations["none"];
     $scope.unsetStation = $scope.stations["unset"];
 
@@ -26,6 +26,8 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.destStations = [$scope.noneStation];
     $scope.formPickup = $scope.pickupStations[0];
     $scope.formDest = $scope.destStations[0];
+    $scope.routeInfo = {};
+    $scope.routeSecTypes = [];
 
     $scope.formVol = "";
     $scope.formVal = "";
@@ -66,7 +68,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     $scope.logStationChange("Destination", newVal, oldVal);
     // Changing the destination station can't change the valid stations, so no
     // need to call updateStations()
-    $scope.routeType = $scope.getRouteType();
+    $scope.updateRouteInfo();
   });
 
   $scope.$watch('[calcForm.vol_input.$error, calcForm.val_input.$error, calcForm.credit_input.$error]', function(newVal, oldVal) {
@@ -93,7 +95,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
 
   $scope.filterStations = function(skip) {
     var stns = [];
-    var routeStns = $scope.routeStations[$scope.formRoute.name].stns;
+    var routeStns = $scope.routesMeta[$scope.formRoute.name].stns;
 
     for(var i in routeStns) {
       var routeStn = routeStns[i];
@@ -133,7 +135,7 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
       $scope.formDest = $scope.destStations[1];
     };
 
-    $scope.routeType = $scope.getRouteType();
+    $scope.updateRouteInfo();
   };
 
   $scope.findStation = function(id, stations) {
@@ -152,13 +154,16 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
     return -1;
   };
 
-  $scope.getRouteType = function() {
-    var types = [];
-    var curRouteStations = $scope.routeStations[$scope.formRoute.name].stns;
-    var pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteStations);
-    var destIdx = $scope.stationIndex($scope.formDest.id, curRouteStations);
+  $scope.updateRouteInfo = function() {
+    var routeInfo = {};
+    $scope.routeSecTypes = [];
+
+    var curRouteMeta = $scope.routesMeta[$scope.formRoute.name];
+    var pickupIdx = $scope.stationIndex($scope.formPickup.id, curRouteMeta.stns);
+    var destIdx = $scope.stationIndex($scope.formDest.id, curRouteMeta.stns);
+
     console.log(
-        "getRouteType: pickup Id:"
+        "updateRouteInfo: pickup Id:"
         +$scope.formPickup.id
         +" index:"
         +pickupIdx
@@ -167,31 +172,53 @@ eveShippingCalc.controller("CalcCtrl", ['$scope', '$window', '$location', functi
         +" index:"
         +destIdx);
     if(pickupIdx < 0 || destIdx < 0)
-      return [];
+      return;
+
+    routeInfo.volUnit = curRouteMeta["volUnit"];
+    if(routeInfo.volUnit)
+      routeInfo.volCost = 0;
+    routeInfo.valUnit = curRouteMeta["valUnit"];
+    if(routeInfo.valUnit)
+      routeInfo.valCost = 0;
 
     var step = 1;
     var start = pickupIdx;
     var end = destIdx + 1; //So we include the destIdx in the loop
+    var valCostName = "valCostNext";
+    var volCostName = "volCostNext";
     if (pickupIdx > destIdx) {
       step = -1;
       start = pickupIdx;
       end = destIdx -1; //So we include the pickupIdx in the loop
+      valCostName = "valCostPrev";
+      volCostName = "volCostPrev";
     };
 
     for(var i=start; i!=end; i+=step) {
-      var stnId = curRouteStations[i].id;
+      var stnId = curRouteMeta.stns[i].id;
       var name = $scope.stations[stnId].name;
-      types.push($scope.stations[stnId].sec);
+      $scope.routeSecTypes.push($scope.stations[stnId].sec);
       console.log("Station:"+name);
+      if(i !== destIdx) { // Don't include cost of final station.
+        if(routeInfo.volUnit) {
+          routeInfo.volCost += curRouteMeta.stns[i][volCostName] ||  curRouteMeta.stns[i]["volCost"];
+        }
+        if(routeInfo.valUnit) {
+          routeInfo.valCost += curRouteMeta.stns[i][valCostName] ||  curRouteMeta.stns[i]["valCost"];
+        }
+      }
     };
-    console.log("Sec types:"+types);
-    return types;
+
+    $scope.routeInfo = routeInfo;
+
+    console.log("route info: "+JSON.stringify($scope.routeInfo));
+    console.log("Sec types:"+$scope.routeSecTypes);
   };
 
   $scope.hasHighsecSection = function() {
     var highsec = 0;
-    for(var i=0; i < $scope.routeType.length; i++) {
-      if($scope.routeType[i] !== "high") {
+    for(var i=0; i < $scope.routeInfo.length; i++) {
+      if($scope.routeInfo[i] !== "high") {
         highsec = 0;
         continue;
       };
