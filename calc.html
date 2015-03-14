@@ -47,7 +47,7 @@
           (<a href={{formDest.url}} target="_blank">dotlan</a><span ng-show="inEve">, <span class="ingame" ng-click="showStn(formDest.id)">info</span></span>)
         </span>
       </div>
-      <div class="clear">
+      <div class="clear" ng-show="cfg.rules.maxVolume > 0">
         <label ng-class="{error: !calcForm.vol_input.$valid}">Volume (k m<sup>3</sup>)</label>
         <input name=vol_input
                type=number
@@ -58,7 +58,7 @@
                placeholder="E.g. {{cfg.rules.egVolume || '30'}}">
         (<span ng-class="{error: calcForm.vol_input.$error['max']}">max {{cfg.rules.maxVolume}}k m<sup>3</sup></span>)
       </div>
-      <div class="clear">
+      <div class="clear" ng-show="cfg.rules.maxValue > 0">
         <label ng-class="{error: !calcForm.val_input.$valid}">Value (Mil ISK)</label>
         <input name=val_input
                type=number
